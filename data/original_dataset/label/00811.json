@@ -1,0 +1,118 @@
+{
+  "version": "5.10.1",
+  "flags": {},
+  "shapes": [
+    {
+      "label": "10^-3",
+      "points": [
+        [
+          620.4651162790698,
+          471.3953488372092
+        ],
+        [
+          853.0232558139535,
+          673.7209302325582
+        ]
+      ],
+      "group_id": null,
+      "description": "",
+      "shape_type": "rectangle",
+      "flags": {},
+      "mask": null
+    },
+    {
+      "label": "10^-4",
+      "points": [
+        [
+          883.2558139534884,
+          96.97674418604646
+        ],
+        [
+          1125.1162790697674,
+          317.90697674418595
+        ]
+      ],
+      "group_id": null,
+      "description": "",
+      "shape_type": "rectangle",
+      "flags": {},
+      "mask": null
+    },
+    {
+      "label": "走水字轮",
+      "points": [
+        [
+          934.4186046511628,
+          322.5581395348837
+        ],
+        [
+          1118.139534883721,
+          501.62790697674416
+        ]
+      ],
+      "group_id": null,
+      "description": "",
+      "shape_type": "rectangle",
+      "flags": {},
+      "mask": null
+    },
+    {
+      "label": "10^-2",
+      "points": [
+        [
+          725.1162790697675,
+          690.0
+        ],
+        [
+          950.6976744186047,
+          901.6279069767443
+        ]
+      ],
+      "group_id": null,
+      "description": "",
+      "shape_type": "rectangle",
+      "flags": {},
+      "mask": null
+    },
+    {
+      "label": "10^-1",
+      "points": [
+        [
+          976.2790697674419,
+          769.0697674418604
+        ],
+        [
+          1204.1860465116279,
+          1001.6279069767443
+        ]
+      ],
+      "group_id": null,
+      "description": "",
+      "shape_type": "rectangle",
+      "flags": {},
+      "mask": null
+    },
+    {
+      "label": "字轮",
+      "points": [
+        [
+          1273.953488372093,
+          194.65116279069764
+        ],
+        [
+          1443.7209302325582,
+          780.6976744186047
+        ]
+      ],
+      "group_id": null,
+      "description": "",
+      "shape_type": "rectangle",
+      "flags": {},
+      "mask": null
+    }
+  ],
+  "imagePath": "..\\601-8001111\\801-900\\00811.jpg",
+  "imageData": null,
+  "imageHeight": 1080,
+  "imageWidth": 1920
+}

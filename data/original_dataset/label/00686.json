@@ -1,0 +1,118 @@
+{
+  "version": "5.10.1",
+  "flags": {},
+  "shapes": [
+    {
+      "label": "10^-4",
+      "points": [
+        [
+          853.0232558139535,
+          80.6976744186046
+        ],
+        [
+          1115.8139534883721,
+          306.2790697674418
+        ]
+      ],
+      "group_id": null,
+      "description": "",
+      "shape_type": "rectangle",
+      "flags": {},
+      "mask": null
+    },
+    {
+      "label": "10^-3",
+      "points": [
+        [
+          620.4651162790698,
+          471.3953488372092
+        ],
+        [
+          853.0232558139535,
+          673.7209302325582
+        ]
+      ],
+      "group_id": null,
+      "description": "",
+      "shape_type": "rectangle",
+      "flags": {},
+      "mask": null
+    },
+    {
+      "label": "10^-2",
+      "points": [
+        [
+          762.3255813953489,
+          683.0232558139535
+        ],
+        [
+          973.953488372093,
+          896.9767441860465
+        ]
+      ],
+      "group_id": null,
+      "description": "",
+      "shape_type": "rectangle",
+      "flags": {},
+      "mask": null
+    },
+    {
+      "label": "10^-1",
+      "points": [
+        [
+          1004.186046511628,
+          750.4651162790697
+        ],
+        [
+          1229.7674418604652,
+          973.7209302325582
+        ]
+      ],
+      "group_id": null,
+      "description": "",
+      "shape_type": "rectangle",
+      "flags": {},
+      "mask": null
+    },
+    {
+      "label": "字轮",
+      "points": [
+        [
+          1297.2093023255813,
+          166.74418604651157
+        ],
+        [
+          1434.418604651163,
+          734.1860465116279
+        ]
+      ],
+      "group_id": null,
+      "description": "",
+      "shape_type": "rectangle",
+      "flags": {},
+      "mask": null
+    },
+    {
+      "label": "走水标志",
+      "points": [
+        [
+          934.4186046511628,
+          315.5813953488372
+        ],
+        [
+          1118.139534883721,
+          471.3953488372092
+        ]
+      ],
+      "group_id": null,
+      "description": "",
+      "shape_type": "rectangle",
+      "flags": {},
+      "mask": null
+    }
+  ],
+  "imagePath": "..\\601-800\\601-700\\00686.jpg",
+  "imageData": null,
+  "imageHeight": 1080,
+  "imageWidth": 1920
+}

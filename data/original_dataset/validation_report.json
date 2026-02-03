@@ -1,0 +1,89 @@
+{
+  "dataset_root": "E:\\E_EngineeringWarehouse\\202602\\Water-meter-quality-inspection\\data\\original_dataset",
+  "image_dir": "E:\\E_EngineeringWarehouse\\202602\\Water-meter-quality-inspection\\data\\original_dataset\\fig",
+  "label_dir": "E:\\E_EngineeringWarehouse\\202602\\Water-meter-quality-inspection\\data\\original_dataset\\label",
+  "summary": {
+    "total_images": 967,
+    "total_labels": 559,
+    "paired_items": 3,
+    "images_missing_label": 0,
+    "labels_missing_image": 0,
+    "json_file_errors": 0,
+    "files_without_shapes": 0,
+    "total_shapes": 18,
+    "invalid_shapes": 0,
+    "out_of_bounds_points": 0,
+    "zero_area_shapes": 0,
+    "files_with_pointer": 3,
+    "pointer_shape_total": 12
+  },
+  "pointer_rules": {
+    "exact_labels": [],
+    "keywords": [
+      "pointer",
+      "needle"
+    ],
+    "resolved_pointer_labels": [
+      "10^-1",
+      "10^-2",
+      "10^-3",
+      "10^-4"
+    ]
+  },
+  "top_labels": [
+    [
+      "10^-4",
+      3
+    ],
+    [
+      "走水标志",
+      3
+    ],
+    [
+      "10^-3",
+      3
+    ],
+    [
+      "10^-2",
+      3
+    ],
+    [
+      "10^-1",
+      3
+    ],
+    [
+      "字轮",
+      3
+    ]
+  ],
+  "missing_label_examples": [],
+  "missing_image_examples": [],
+  "requested_stems": [
+    "00201",
+    "00202",
+    "00203"
+  ],
+  "requested_missing_in_dataset": [],
+  "file_errors": [],
+  "records": [
+    {
+      "stem": "00201",
+      "shape_count": 6,
+      "pointer_shape_count": 4,
+      "issues": []
+    },
+    {
+      "stem": "00202",
+      "shape_count": 6,
+      "pointer_shape_count": 4,
+      "issues": []
+    },
+    {
+      "stem": "00203",
+      "shape_count": 6,
+      "pointer_shape_count": 4,
+      "issues": []
+    }
+  ],
+  "visualization": "ok: saved previews to E:\\E_EngineeringWarehouse\\202602\\Water-meter-quality-inspection\\data\\original_dataset\\validation_preview"
+}
