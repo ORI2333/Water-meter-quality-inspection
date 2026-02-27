@@ -2,6 +2,12 @@
 
 ## 版本说明
 
+### V0.1.2（20260227）
+- 补充之前测试结果文件，
+
+下面yolo11s，产出文件脚本可根据源文件自动划分，当前尚不上传，待数据集完善
+![](https://obsidian-picturebed-1256135654.cos.ap-nanjing.myqcloud.com/obsidion/20260227173416602.png?imageSlim)
+
 ### V0.1.1（20260227）
 - 训练脚本
 - 冒烟测试
