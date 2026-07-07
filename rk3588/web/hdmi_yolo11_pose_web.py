@@ -92,6 +92,7 @@ main{display:grid;grid-template-columns:minmax(0,1fr) minmax(580px,640px);gap:18
           <label class="toggle"><input id="overlayToggle" type="checkbox" checked onchange="setOverlay(this.checked)">显示检测标注</label>
         </div>
         <div class="control-right">
+          <span class="seg"><button id="streamDetect" onclick="setStreamMode('detect')">YOLO检测</button><button id="streamNative" onclick="setStreamMode('native')">原生视频</button></span>
           <span class="seg"><button id="modeAccuracy" onclick="switchModelMode('accuracy')">精度 FP</button><button id="modeFast" onclick="switchModelMode('fast')">快速 INT8</button></span>
           <span class="seg"><button id="sizeSmall" onclick="setVideoSize('small')">小窗</button><button id="sizeMedium" onclick="setVideoSize('medium')">中窗</button><button id="sizeLarge" onclick="setVideoSize('large')">影院</button></span>
         </div>
@@ -111,7 +112,7 @@ main{display:grid;grid-template-columns:minmax(0,1fr) minmax(580px,640px);gap:18
         <div class="tune"><label>视频框宽度 <b id="playerWidthText">--</b></label><input id="playerWidth" type="range" min="640" max="1500" step="20" oninput="setPlayerWidth(this.value)"></div>
         <div class="tune"><label>推流宽度 <b id="streamWidthText">--</b></label><input id="streamWidth" type="range" min="480" max="1280" step="80" oninput="queueStreamSettings()"></div>
         <div class="tune"><label>JPEG 质量 <b id="qualityText">--</b></label><input id="streamQuality" type="range" min="45" max="98" step="1" oninput="queueStreamSettings()"></div>
-        <div class="tune"><label>网页帧率 <b id="streamFpsText">--</b></label><input id="streamFps" type="range" min="2" max="30" step="1" oninput="queueStreamSettings()"></div>
+        <div class="tune"><label>网页帧率 <b id="streamFpsText">--</b></label><input id="streamFps" type="range" min="2" max="60" step="1" oninput="queueStreamSettings()"></div>
       </div>
     </section>
   </section>
@@ -144,6 +145,14 @@ async function togglePause(){
 async function setOverlay(enabled){
   try{const s=await postControl({action:'set_overlay',overlay:enabled}); $('actionMsg').textContent=s.message||'完成'; tick();}
   catch(e){$('actionMsg').textContent='标注控制失败：'+e.message;}
+}
+async function setStreamMode(mode){
+  try{
+    const s=await postControl({action:'set_stream_mode',mode});
+    $('actionMsg').textContent=s.message||'完成';
+    reloadStream();
+    tick();
+  }catch(e){$('actionMsg').textContent='视频模式切换失败：'+e.message;}
 }
 function reloadStream(){const img=$('stream'); img.src='/stream?ts='+Date.now();}
 function openSnapshot(){window.open('/snapshot.jpg?ts='+Date.now(),'_blank');}
@@ -204,13 +213,16 @@ function setHealth(s){
   $('pauseState').className='pill '+(s.paused?'warn':'ok');
   $('pauseBtn').textContent=s.paused?'继续':'暂停';
   $('videoBox').className='video '+(s.paused?'paused':'');
-  $('modeAccuracy').classList.toggle('active', s.model_mode!=='fast');
-  $('modeFast').classList.toggle('active', s.model_mode==='fast');
+    $('modeAccuracy').classList.toggle('active', s.model_mode!=='fast');
+    $('modeFast').classList.toggle('active', s.model_mode==='fast');
+  $('streamDetect').classList.toggle('active', s.stream_mode!=='native');
+  $('streamNative').classList.toggle('active', s.stream_mode==='native');
 }
 async function tick(){
   try{
     const r=await fetch('/status',{cache:'no-store'}); const s=await r.json(); lastStatus=s; setHealth(s);
-    $('fps').textContent=fmt(s.fps,1); $('displayFps').textContent=fmt(s.display_fps,1); $('infer').textContent=fmt(s.infer_ms,1)+' ms'; $('det').textContent=s.det_count??'--'; $('frames').textContent=s.frame_count??'--';
+    const native=s.stream_mode==='native';
+    $('fps').textContent=native?'关闭':fmt(s.fps,1); $('displayFps').textContent=fmt(s.display_fps,1); $('infer').textContent=native?'原生':fmt(s.infer_ms,1)+' ms'; $('det').textContent=native?'--':(s.det_count??'--'); $('frames').textContent=s.frame_count??'--';
     $('reading').textContent=fmt(s.elapsed_m3,6)+' m³'; $('decimalM3').textContent=fmt(s.total_m3,6)+' m³'; $('cumReading').textContent=s.measurement_source||'--';
     if(document.activeElement!==$('baseM3')) $('baseM3').value=Number.isFinite(s.base_m3)?s.base_m3:'';
     if(document.activeElement!==$('overlayToggle')) $('overlayToggle').checked=s.overlay_enabled!==false;
@@ -219,7 +231,7 @@ async function tick(){
     if(document.activeElement!==$('streamFps')) {$('streamFps').value=s.stream_fps||12; $('streamFpsText').textContent=(s.stream_fps||0)+' fps';}
     const cfgSrc=String(s.measurement_source_config||'auto');
     ['Auto','0','1','2','3'].forEach(n=>{const el=$('src'+n); if(el) el.classList.toggle('active',(n==='Auto'?'auto':n)===cfgSrc);});
-    $('input').innerHTML=`<div>模式</div><div>${s.model_mode==='fast'?'快速 INT8':'精度 FP'}</div><div>设备</div><div>${s.device||''}</div><div>输入</div><div>${s.width||0}x${s.height||0}@${s.req_fps||0}</div><div>模型</div><div title="${s.model||''}">${s.model||''}</div><div>NPU</div><div>${s.core_mask||''}</div><div>网页流</div><div>${s.stream_width||0}px / JPEG ${s.jpeg_quality||''} / ${s.stream_fps||0}fps</div><div>状态</div><div>${s.error||'正常'}</div>`;
+    $('input').innerHTML=`<div>视频模式</div><div>${native?'原生视频':'YOLO检测'}</div><div>模型</div><div>${s.model_mode==='fast'?'快速 INT8':'精度 FP'}</div><div>设备</div><div>${s.device||''}</div><div>输入</div><div>${s.width||0}x${s.height||0}@${s.req_fps||0}</div><div>模型文件</div><div title="${s.model||''}">${s.model||''}</div><div>NPU</div><div>${native?'未调用':(s.core_mask||'')}</div><div>网页流</div><div>${s.stream_width||0}px / JPEG ${s.jpeg_quality||''} / ${s.stream_fps||0}fps</div><div>状态</div><div>${s.error||'正常'}</div>`;
     if(s.dials&&s.dials.length){$('dials').innerHTML=s.dials.map(dialHtml).join('');} else {$('dials').textContent='等待检测结果';}
   }catch(e){$('health').textContent='离线';$('health').className='pill bad';}
 }
@@ -285,6 +297,7 @@ def parse_args():
     p.add_argument("--stream-width", type=int, default=800)
     p.add_argument("--stream-fps", type=float, default=12.0)
     p.add_argument("--jpeg-quality", type=int, default=70)
+    p.add_argument("--stream-mode", default="detect", choices=("detect", "native"), help="detect runs YOLO; native streams raw HDMI frames only")
     p.add_argument("--infer-every", type=int, default=1)
     p.add_argument("--core-mask", default="all", choices=("auto", "all", "0", "1", "2", "01", "012"))
     p.add_argument("--host", default="0.0.0.0")
@@ -509,7 +522,9 @@ class VideoWorker(threading.Thread):
         self.config = load_config()
         self.counter = TurnCounter(self.config, args.turn_deadband)
         self.lock = threading.Lock()
+        self.frame_cond = threading.Condition(self.lock)
         self.frame_jpeg = None
+        self.frame_seq = 0
         self.latest_dets = []
         self.latest_infer_ms = 0.0
         self.status = {
@@ -523,13 +538,14 @@ class VideoWorker(threading.Thread):
             "measurement_source_config": self.config.get("measurement_source", "auto"),
             "error": "starting", "updated": time.time(), "core_mask": args.core_mask,
             "stream_width": args.stream_width, "stream_fps": args.stream_fps, "jpeg_quality": args.jpeg_quality,
-            "paused": False, "overlay_enabled": True,
+            "paused": False, "overlay_enabled": True, "stream_mode": args.stream_mode,
             "angle_deadband": args.angle_deadband, "angle_confirm_frames": args.angle_confirm_frames,
             "turn_deadband": args.turn_deadband,
         }
         self.stop_event = threading.Event()
         self.paused = False
         self.overlay_enabled = True
+        self.stream_mode = str(args.stream_mode)
         self.stream_width = int(args.stream_width)
         self.stream_fps = float(args.stream_fps)
         self.jpeg_quality = int(args.jpeg_quality)
@@ -549,9 +565,17 @@ class VideoWorker(threading.Thread):
         with self.lock:
             return self.frame_jpeg
 
+    def wait_frame(self, last_seq=0, timeout=1.0):
+        with self.frame_cond:
+            if self.frame_seq == last_seq and not self.stop_event.is_set():
+                self.frame_cond.wait(timeout=timeout)
+            return self.frame_seq, self.frame_jpeg
+
     def set_frame(self, jpg):
-        with self.lock:
+        with self.frame_cond:
             self.frame_jpeg = jpg
+            self.frame_seq += 1
+            self.frame_cond.notify_all()
 
     def reset_turns(self):
         with self.lock:
@@ -645,6 +669,30 @@ class VideoWorker(threading.Thread):
             self.status["updated"] = time.time()
         return {"ok": True, "message": "检测标注已显示" if enabled else "检测标注已隐藏"}
 
+    def set_stream_mode(self, mode):
+        mode = str(mode or "").strip().lower()
+        if mode not in ("detect", "native"):
+            return {"ok": False, "message": "视频模式无效"}
+        with self.lock:
+            self.stream_mode = mode
+            self.status["stream_mode"] = mode
+            if mode == "native":
+                self.latest_dets = []
+                self.latest_infer_ms = 0.0
+                self.stream_width = int(self.args.width)
+                self.stream_fps = max(float(self.stream_fps), float(self.args.fps))
+                self.jpeg_quality = max(int(self.jpeg_quality), 90)
+                self.status["det_count"] = 0
+                self.status["infer_ms"] = 0.0
+                self.status["stream_width"] = self.stream_width
+                self.status["stream_fps"] = self.stream_fps
+                self.status["jpeg_quality"] = self.jpeg_quality
+                msg = f"已切换到原生视频：{self.stream_width}px / JPEG {self.jpeg_quality} / {self.stream_fps:.0f}fps，不调用 YOLO"
+            else:
+                msg = "已切换到 YOLO 检测视频"
+            self.status["updated"] = time.time()
+        return {"ok": True, "message": msg}
+
     def set_stream(self, stream_width=None, jpeg_quality=None, stream_fps=None):
         def clamp_int(value, default, low, high):
             try:
@@ -663,7 +711,7 @@ class VideoWorker(threading.Thread):
         with self.lock:
             self.stream_width = clamp_int(stream_width, self.stream_width, 480, int(self.args.width))
             self.jpeg_quality = clamp_int(jpeg_quality, self.jpeg_quality, 45, 98)
-            self.stream_fps = clamp_float(stream_fps, self.stream_fps, 2.0, 30.0)
+            self.stream_fps = clamp_float(stream_fps, self.stream_fps, 2.0, max(60.0, float(self.args.fps)))
             self.status["stream_width"] = self.stream_width
             self.status["jpeg_quality"] = self.jpeg_quality
             self.status["stream_fps"] = self.stream_fps
@@ -720,6 +768,7 @@ class VideoWorker(threading.Thread):
                 with self.lock:
                     paused = self.paused
                     overlay_enabled = self.overlay_enabled
+                    stream_mode = self.stream_mode
                     stream_width = self.stream_width
                     stream_fps = self.stream_fps
                     jpeg_quality = self.jpeg_quality
@@ -732,7 +781,8 @@ class VideoWorker(threading.Thread):
                     self.update_status(error="HDMI timeout")
                     continue
                 frame_count += 1
-                do_infer = (frame_count == 1) or (frame_count % max(1, args.infer_every) == 0)
+                native_mode = stream_mode == "native"
+                do_infer = (not native_mode) and ((frame_count == 1) or (frame_count % max(1, args.infer_every) == 0))
                 if do_infer:
                     dets, infer_ms = pose.infer_frame(self.rknn, frame, args, input_w, input_h, layout, dtype, debug=False)
                     self.latest_dets = keep_best_per_class(dets)
@@ -745,27 +795,36 @@ class VideoWorker(threading.Thread):
                     fps_smooth = 0.9 * fps_smooth + 0.1 * (1.0 / dt) if fps_smooth else 1.0 / dt
                 stream_interval = 1.0 / max(float(stream_fps), 0.1)
                 make_jpeg = (now - last_jpeg) >= stream_interval
-                dials = self.status.get("dials", [])
+                dials = [] if native_mode else self.status.get("dials", [])
                 if make_jpeg:
-                    annotated = frame.copy()
-                    dials = draw_pose_stable(annotated, self.latest_dets, stabilizer, self.counter, geometry=geometry, overlay_enabled=overlay_enabled)
-                    if stream_width and annotated.shape[1] > stream_width:
-                        scale = stream_width / float(annotated.shape[1])
-                        annotated = cv2.resize(annotated, (stream_width, int(annotated.shape[0] * scale)), interpolation=cv2.INTER_AREA)
-                    ok, enc = cv2.imencode(".jpg", annotated, [int(cv2.IMWRITE_JPEG_QUALITY), int(jpeg_quality)])
+                    if native_mode:
+                        output = frame
+                    else:
+                        output = frame.copy()
+                        dials = draw_pose_stable(output, self.latest_dets, stabilizer, self.counter, geometry=geometry, overlay_enabled=overlay_enabled)
+                    if stream_width and output.shape[1] > stream_width:
+                        scale = stream_width / float(output.shape[1])
+                        output = cv2.resize(output, (stream_width, int(output.shape[0] * scale)), interpolation=cv2.INTER_AREA)
+                    ok, enc = cv2.imencode(".jpg", output, [int(cv2.IMWRITE_JPEG_QUALITY), int(jpeg_quality)])
                     if ok:
                         self.set_frame(enc.tobytes())
                     last_jpeg = now
                 elif do_infer:
                     dials = update_dials_only(self.latest_dets, stabilizer, self.counter)
-                instant_decimal_m3 = sum(float(d.get("reading_part", 0.0)) for d in dials)
-                elapsed_m3, measurement_source = self.counter.elapsed_m3(dials, self.config.get("measurement_source", "auto"))
-                base_m3 = float(self.config.get("base_m3", 0.0))
-                total_m3 = base_m3 + elapsed_m3
                 infer_fps = infer_count / max(now - t0, 1e-6)
-                self.update_status(error="", fps=infer_fps, display_fps=fps_smooth, infer_ms=float(self.latest_infer_ms), det_count=len(self.latest_dets), frame_count=frame_count, dials=dials, decimal_reading=instant_decimal_m3, cumulative_reading=elapsed_m3, decimal_m3=instant_decimal_m3, total_m3=total_m3, cumulative_m3=elapsed_m3, elapsed_m3=elapsed_m3, measurement_source=measurement_source, measurement_source_config=self.config.get("measurement_source", "auto"), base_m3=base_m3, paused=False, overlay_enabled=overlay_enabled, stream_width=stream_width, stream_fps=stream_fps, jpeg_quality=jpeg_quality)
+                base_m3 = float(self.config.get("base_m3", 0.0))
+                if native_mode:
+                    instant_decimal_m3 = 0.0
+                    elapsed_m3 = float(self.status.get("elapsed_m3", 0.0))
+                    total_m3 = base_m3 + elapsed_m3
+                    measurement_source = "原生视频"
+                else:
+                    instant_decimal_m3 = sum(float(d.get("reading_part", 0.0)) for d in dials)
+                    elapsed_m3, measurement_source = self.counter.elapsed_m3(dials, self.config.get("measurement_source", "auto"))
+                    total_m3 = base_m3 + elapsed_m3
+                self.update_status(error="", fps=0.0 if native_mode else infer_fps, display_fps=fps_smooth, infer_ms=0.0 if native_mode else float(self.latest_infer_ms), det_count=0 if native_mode else len(self.latest_dets), frame_count=frame_count, dials=[] if native_mode else dials, decimal_reading=instant_decimal_m3, cumulative_reading=elapsed_m3, decimal_m3=instant_decimal_m3, total_m3=total_m3, cumulative_m3=elapsed_m3, elapsed_m3=elapsed_m3, measurement_source=measurement_source, measurement_source_config=self.config.get("measurement_source", "auto"), base_m3=base_m3, paused=False, overlay_enabled=overlay_enabled, stream_mode=stream_mode, stream_width=stream_width, stream_fps=stream_fps, jpeg_quality=jpeg_quality)
                 if args.print_every and (frame_count == 1 or frame_count % args.print_every == 0):
-                    print(f"[STAT] frame={frame_count} infer_fps={infer_fps:.2f} loop_fps={fps_smooth:.2f} infer={self.latest_infer_ms:.1f}ms det={len(self.latest_dets)} elapsed_m3={elapsed_m3:.6f} source={measurement_source}", flush=True)
+                    print(f"[STAT] frame={frame_count} mode={stream_mode} infer_fps={infer_fps:.2f} loop_fps={fps_smooth:.2f} infer={self.latest_infer_ms:.1f}ms det={len(self.latest_dets) if not native_mode else 0} elapsed_m3={elapsed_m3:.6f} source={measurement_source}", flush=True)
         except Exception as exc:
             self.update_status(error=str(exc))
             print(f"[ERROR] {exc}", flush=True)
@@ -815,13 +874,12 @@ class DashboardHandler(BaseHTTPRequestHandler):
             self.send_header("Pragma", "no-cache")
             self.send_header("Content-Type", "multipart/x-mixed-replace; boundary=frame")
             self.end_headers()
-            last = None
+            last_seq = 0
             while not self.server.worker.stop_event.is_set():
-                frame = self.server.worker.get_frame()
-                if frame is None or frame is last:
-                    time.sleep(0.03)
+                seq, frame = self.server.worker.wait_frame(last_seq=last_seq, timeout=1.0)
+                if frame is None or seq == last_seq:
                     continue
-                last = frame
+                last_seq = seq
                 try:
                     self.wfile.write(b"--frame\r\n")
                     self.wfile.write(b"Content-Type: image/jpeg\r\n")
@@ -862,6 +920,8 @@ class DashboardHandler(BaseHTTPRequestHandler):
             self.send_json(self.server.worker.set_pause(payload.get("paused", False)))
         elif action == "set_overlay":
             self.send_json(self.server.worker.set_overlay(payload.get("overlay", True)))
+        elif action == "set_stream_mode":
+            self.send_json(self.server.worker.set_stream_mode(payload.get("mode", "detect")))
         elif action == "set_stream":
             self.send_json(self.server.worker.set_stream(payload.get("stream_width"), payload.get("jpeg_quality"), payload.get("stream_fps")))
         elif action == "restart_model_mode":
