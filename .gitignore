@@ -1,2 +1,96 @@
+# ----------------------------------------------------------------------
+# Datasets / labels / generated training data
+# ----------------------------------------------------------------------
+data/original_dataset/
 data/数据集/
 data/yolo11s_pointer_detect/
+data/yolo11_pointer_pose/
+WaterMeter_Pose_Labelme_Package_*/
+labelme_*_edit/
+*_Labelme_Package_*/
+script/
+/run_labelme_*.bat
+labelme_start*.log
+
+# ----------------------------------------------------------------------
+# Model weights and conversion outputs
+# ----------------------------------------------------------------------
+weights/
+*.pt
+*.pth
+*.onnx
+*.rknn
+*.engine
+*.tflite
+*.npy
+*.npz
+
+# ----------------------------------------------------------------------
+# Training, benchmark and package artifacts
+# ----------------------------------------------------------------------
+runs/
+wandb/
+rk_test_outputs/
+rknn_wheels/
+rknn_int8_variants_*/
+*.zip
+*.tar
+*.tar.gz
+*.7z
+*.rar
+*.whl
+
+# ----------------------------------------------------------------------
+# Vivado generated artifacts
+# ----------------------------------------------------------------------
+**/.Xil/
+**/*.cache/
+**/*.gen/
+**/*.hw/
+**/*.ip_user_files/
+**/*.runs/
+**/xsim.dir/
+*.jou
+*.log
+*.pb
+*.wdf
+*.wdb
+*.str
+*.rpt
+*.rpx
+*.dcp
+*.bit
+*.bin
+
+# Keep reproducible FPGA project/source definitions
+!*.xpr
+!*.xci
+!*.xdc
+!*.ucf
+!*.tcl
+!*.sv
+!*.v
+!*.vh
+!*.vhd
+!*.vhdl
+!*.prj
+
+# ----------------------------------------------------------------------
+# Python / local runtime
+# ----------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+*.pid
+*.sqlite
+*.db
+
+# ----------------------------------------------------------------------
+# Editor / OS
+# ----------------------------------------------------------------------
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

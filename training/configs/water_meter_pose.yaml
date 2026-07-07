@@ -1,0 +1,13 @@
+# Water meter pointer pose dataset
+path: .
+train: images/train
+val: images/val
+
+kpt_shape: [2, 3]
+flip_idx: [0, 1]
+
+names:
+  0: 10^-1
+  1: 10^-2
+  2: 10^-3
+  3: 10^-4
