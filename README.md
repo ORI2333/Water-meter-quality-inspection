@@ -209,6 +209,7 @@ WM_MODEL_MODE=fast ./run_hdmi_yolo11_pose_web.sh
 
 | 文档 | 说明 |
 | --- | --- |
+| `docs/Blog_FPGA_RK3588_WaterMeter_HDMI_YOLO11_Pose.md` | 面向技术博客发布的完整项目文章 |
 | `docs/Technical_Blog_Full.md` | 全链路技术博客详解 |
 | `docs/FPGA_ISP_RK3588_WaterMeter_Technical_Doc.md` | FPGA + RK3588 技术文档 |
 | `docs/FPGA_ISP_RK3588_WaterMeter_User_Manual.md` | 使用手册 |
